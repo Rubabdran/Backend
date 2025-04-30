@@ -1,0 +1,1 @@
+CREATE DATABASE text_to_pic;

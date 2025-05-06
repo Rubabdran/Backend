@@ -154,12 +154,12 @@ class CreateCommentView(APIView):
     def post(self, request, image_id):
         try:
             image = get_object_or_404(Image, id=image_id)
-            comment_text = request.data.get("text")
+            emoji = request.data.get("emoji")
 
-            if not comment_text:
-                return Response({"error": "Comment text is required"}, status=400)
+            if not emoji:
+                return Response({"error": "Emoji is required"}, status=400)
 
-            comment = Comment.objects.create(user=request.user, image=image, text=comment_text)
+            comment = Comment.objects.create(user=request.user, image=image, text=emoji)
             return Response(CommentSerializer(comment).data, status=201)
         except Exception as err:
             return Response({'error': str(err)}, status=400)

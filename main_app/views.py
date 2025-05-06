@@ -113,7 +113,20 @@ class ListFavoriteImagesView(APIView):
             return Response(serializer.data, status=200)
         except Exception as err:
             return Response({'error': str(err)}, status=400)
-          
+
+class DeleteFavoriteImageView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, pk):
+        try:
+            favorite = Favorite.objects.filter(user=request.user, image__id=pk).first()
+            if favorite:
+                favorite.delete()
+                return Response({'status': 'Deleted'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"detail": "Favorite not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
           
 class PublishImageView(APIView):
     serializer_class = ImageSerializer
@@ -135,3 +148,18 @@ class ExplorePublicImagesView(generics.ListAPIView):
     serializer_class = ImageSerializer
     permission_classes = [permissions.AllowAny]
     
+class CreateCommentView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, image_id):
+        try:
+            image = get_object_or_404(Image, id=image_id)
+            comment_text = request.data.get("text")
+
+            if not comment_text:
+                return Response({"error": "Comment text is required"}, status=400)
+
+            comment = Comment.objects.create(user=request.user, image=image, text=comment_text)
+            return Response(CommentSerializer(comment).data, status=201)
+        except Exception as err:
+            return Response({'error': str(err)}, status=400)

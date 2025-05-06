@@ -13,6 +13,10 @@ urlpatterns = [
   
   path('images/explore/', views.ExplorePublicImagesView.as_view(), name='explore-public-images'),
   path('images/favorites/', views.ListFavoriteImagesView.as_view(), name='all-favorites-images'),
+  
+  path('images/favorites/<int:pk>/', views.DeleteFavoriteImageView.as_view(), name='delete-favorite'),
+  path('images/<int:image_id>/comments/', views.CreateCommentView.as_view(), name='create-comment'),
+
 
 
 ]

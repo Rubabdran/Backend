@@ -1,3 +1,4 @@
+#---------------all API endpoints--------------#
 
 from django.db import IntegrityError
 from rest_framework.views import APIView
@@ -11,14 +12,17 @@ from django.core.exceptions import ValidationError
 from .models import Image, Favorite,  Comment
 from django.shortcuts import get_object_or_404
 
- # Define the home view
+#----------------------classes---------------------#
+
+#simple test route for checking if the API is running
 class Home(APIView):
   def get(self, request):
     content = {'message': 'Welcome to - api home route!'}
     return Response(content)
   
+#--------------- user authentication----------------#
 
-# User Registration
+#user registration
 class CreateUserView(generics.CreateAPIView):
   print("hello")
   queryset = User.objects.all()
@@ -34,6 +38,8 @@ class CreateUserView(generics.CreateAPIView):
       print(err)
       return Response({ 'error': str(err)}, status=status.HTTP_400_BAD_REQUEST)
 
+
+#user login
 class LoginView(APIView):
 
     def post(self, request):
@@ -54,7 +60,8 @@ class LoginView(APIView):
                 
         except Exception as err:
             return Response({'error': str(err)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-         
+
+#Checks if the current access token is valid         
 class VerifyUserView(APIView):
   permission_classes = [permissions.IsAuthenticated]
 
@@ -69,7 +76,9 @@ class VerifyUserView(APIView):
     except Exception as err:
       return Response({"detail": "Unexpected error occurred.", "error": str(err)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-       
+#------------------image creation---------------------#
+
+#users can generate and save an image      
 class CreateImage(APIView):
   serializer_class = ImageSerializer
   permission_classes = [permissions.IsAuthenticated]
@@ -86,7 +95,7 @@ class CreateImage(APIView):
     except Exception as err:
       return Response({'error':str(err)}, status=400)
   
-          
+#adds/removes an image from the user's favorites         
 class ToggleFavoriteView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -102,6 +111,7 @@ class ToggleFavoriteView(APIView):
         except Exception as err:
             return Response({'error': str(err)}, status=400)
 
+#returns all favorited images by the authenticated user.
 class ListFavoriteImagesView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -114,6 +124,7 @@ class ListFavoriteImagesView(APIView):
         except Exception as err:
             return Response({'error': str(err)}, status=400)
 
+#removes a specific image from favorites
 class DeleteFavoriteImageView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -127,7 +138,10 @@ class DeleteFavoriteImageView(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-          
+
+#-----------------puplishing & exploration-------------# 
+
+#allows a user to make their image public.        
 class PublishImageView(APIView):
     serializer_class = ImageSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -142,12 +156,15 @@ class PublishImageView(APIView):
         except Exception as err:
             return Response({'error': str(err)}, status=400)
         
-
+#lists all public images, available to any user.
 class ExplorePublicImagesView(generics.ListAPIView):
     queryset = Image.objects.filter(is_public=True)
     serializer_class = ImageSerializer
     permission_classes = [permissions.AllowAny]
-    
+
+#---------------------comments----------------------#
+
+#adds a comment (emoji) to a specific image.
 class CreateCommentView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 

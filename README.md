@@ -51,4 +51,4 @@ docker-compose up --build
 ## 🔗 Links
 
 - **Frontend Repository**: [View Frontend Repo](https://github.com/Rubabdran/Frontend)
-- **Deploy**: (http://localhost:5173/login)
+- **Deploy**: (http://localhost:8000)
